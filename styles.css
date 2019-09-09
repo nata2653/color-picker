@@ -1,0 +1,23 @@
+* {
+  margin: 0;
+}
+
+h1 {
+  margin: 1em;
+}
+
+.selector .inner {
+  margin: 2em;
+}
+
+.box {
+  width: 200px;
+  height: 200px;
+  border-radius: 1em;
+  background-color: #94e3ff;
+  margin: 10px 0px;
+}
+
+p {
+  margin-top: 1em;
+}
