@@ -2,6 +2,13 @@
 document.addEventListener("DOMContentLoaded", start);
 
 function start() {
+  let schemebtn = document.querySelector(".schemebtn");
+  let schemecontent = document.querySelector(".schemedropdown");
+  schemebtn.addEventListener("click", dropScheme);
+  function dropScheme() {
+    schemecontent.classList.toggle("show");
+  }
+
   document.querySelector("input").addEventListener("input", selectColor);
 
   function selectColor(event) {

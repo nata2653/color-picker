@@ -47,3 +47,11 @@ h1 {
 p {
   margin-top: 1em;
 }
+
+.schemedropdown {
+  display: none;
+  flex-direction: column;
+}
+.show {
+  display: flex;
+}
