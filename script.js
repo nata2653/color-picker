@@ -2,10 +2,12 @@
 document.addEventListener("DOMContentLoaded", start);
 
 function start() {
+  let scheme = "analogous";
+  let color;
   document.querySelector("input").addEventListener("input", selectColor);
 
   function selectColor(event) {
-    let color = event.target.value;
+    color = event.target.value;
     hexToRgb(color);
   }
 
@@ -18,7 +20,6 @@ function start() {
     rgb.r = parseInt(hex.substring(0, 2), 16);
     rgb.g = parseInt(hex.substring(2, 4), 16);
     rgb.b = parseInt(hex.substring(4), 16);
-
     rgbToHsl(color, rgb);
   }
 
@@ -62,44 +63,95 @@ function start() {
     s *= 100;
     l *= 100;
 
-    const hsl = `${Math.floor(h)}, ${Math.floor(s)}%, ${Math.floor(l)}%`;
+    const hsl = `${Math.round(h)}, ${Math.round(s)}%, ${Math.round(l)}%`;
+    setColor(color, rgb, hsl);
+    convertColorToHsl(2, hsl);
+    convertColorToHsl(3, hsl);
+    convertColorToHsl(4, hsl);
+    convertColorToHsl(5, hsl);
+  }
 
-    showSourceColor(color, rgb, hsl);
-    convertColoHsl(1, hsl);
-    convertColoHsl(2, hsl);
-    convertColoHsl(4, hsl);
-    convertColoHsl(5, hsl);
+  function rgbToHex(colorId, box) {
+    box = box.split(",");
+    let r = box[0].slice(4, 7);
+    r = parseInt(r, 10);
+    let g = box[1].slice(1, 4);
+    g = parseInt(g, 10);
+    let b = box[2].slice(1, 4);
+    b = parseInt(b, 10);
+    let rgb = {};
+    rgb.r = r;
+    rgb.g = g;
+    rgb.b = b;
+    console.log(rgb);
 
-    function showSourceColor(color, rgb, hsl) {
-      document.querySelector(".container3 .box").style.backgroundColor = color;
-      document.querySelector(".hex-output").textContent = `HEX: ${color}`;
-      document.querySelector(
-        ".rgb-output"
-      ).textContent = `RGB: ${rgb.r}, ${rgb.g}, ${rgb.b}`;
-      document.querySelector(".hsl-output").textContent = `HSL: ${hsl}`;
-    }
+    let rgbToHex = function(rgb) {
+      let hex = Number(rgb).toString(16);
+      if (hex.length < 2) {
+        hex = "0" + hex;
+      }
+      return hex;
+    };
 
-    function showColor(id, h, s, l) {
-      const colorId = id;
-      document.querySelector(
-        `.container${colorId} .box`
-      ).style.backgroundColor = `hsl(${h}, ${s}%, ${l}%)`;
-      // document.querySelector(`.source-color .info .hex-output`).textContent = `HEX: ${color}`;
-      // document.querySelector(
-      //   `.container${colorId} .txt .rgb-output`
-      // ).textContent = box;
-      document.querySelector(
-        `.container${colorId} .txt .hsl-output`
-      ).innerHTML = `HSL: ${h}, ${s}, ${l}`;
-    }
-    function convertColoHsl(num, hsl) {
-      let id = num;
-      hsl = hsl.split(" ");
-      let h = hsl[0].slice(0, -1);
+    console.log(rgbToHex(r));
+
+    let colorHex = function(r, g, b) {
+      let red = rgbToHex(r);
+      let green = rgbToHex(g);
+      let blue = rgbToHex(b);
+      return red + green + blue;
+    };
+    document.querySelector(
+      `.container${colorId} .txt .hex-output`
+    ).textContent = `HEX: #${colorHex(r, g, b)}`;
+  }
+
+  function setColor(color, rgb, hsl) {
+    document.querySelector(".container1 .box").style.backgroundColor = color;
+    document.querySelector(
+      ".container1 .txt .hex-output"
+    ).textContent = `HEX: ${color}`;
+    document.querySelector(
+      ".container1 .txt .rgb-output"
+    ).textContent = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+    document.querySelector(
+      ".container1 .txt .hsl-output"
+    ).textContent = `HSL: ${hsl}`;
+  }
+
+  function showColor(id, h, s, l) {
+    let colorId = id;
+    console.log(colorId);
+    let box = document.querySelector(`.container${colorId} .box`).style
+      .backgroundColor;
+    document.querySelector(
+      `.container${colorId} .box`
+    ).style.backgroundColor = `hsl(${h}, ${s}%, ${l}%)`;
+    document.querySelector(
+      `.container${colorId} .txt .rgb-output`
+    ).innerHTML = box;
+    document.querySelector(
+      `.container${colorId} .txt .hsl-output`
+    ).innerHTML = `HSL: ${h}, ${s}%, ${l}%`;
+    rgbToHex(id, box);
+  }
+
+  function convertColorToHsl(num, hsl) {
+    let id = num;
+    hsl = hsl.split(" ");
+    let h = hsl[0].slice(0, -1);
+    h = parseInt(h, 10);
+    let s = hsl[1].slice(0, -1);
+    s = parseInt(s, 10);
+    let l = hsl[2].slice(0, -1);
+    l = parseInt(l, 10);
+
+    if (scheme == "analogous") {
+      h = hsl[0].slice(0, -1);
       h = parseInt(h, 10);
-      let s = hsl[1].slice(0, -1);
+      s = hsl[1].slice(0, -1);
       s = parseInt(s, 10);
-      let l = hsl[2].slice(0, -1);
+      l = hsl[2].slice(0, -1);
       l = parseInt(l, 10);
       if (id === 1) {
         h = h - 60;
@@ -110,11 +162,193 @@ function start() {
       } else if (id === 4) {
         h = h += 18;
       }
-      showColor(id, h, s, l);
-      hslToRgb(h, s, l);
-      console.log(hslToRgb(h, s, l));
+    } else if (scheme == "monochromatic") {
+      h = hsl[0].slice(0, -1);
+      h = parseInt(h, 10);
+      s = hsl[1].slice(0, -1);
+      s = parseInt(s, 10);
+      l = hsl[2].slice(0, -1);
+      l = parseInt(l, 10);
+      if (id === 1) {
+        l = l - 5;
+      } else if (id === 2) {
+        l = l - 10;
+      } else if (id === 3) {
+        l = l - 15;
+      } else if (id === 4) {
+        l = l - 20;
+      }
+    } else if (scheme == "triad") {
+      h = hsl[0].slice(0, -1);
+      h = parseInt(h, 10);
+      s = hsl[1].slice(0, -1);
+      s = parseInt(s, 10);
+      l = hsl[2].slice(0, -1);
+      l = parseInt(l, 10);
+      if (id === 1) {
+        h = h - 60;
+      } else if (id === 2) {
+        h = h - 120;
+      } else if (id === 3) {
+        h = h - 120;
+      } else if (id === 4) {
+        h = h - 60;
+      }
+    } else if (scheme == "complementary") {
+      h = hsl[0].slice(0, -1);
+      h = parseInt(h, 10);
+      s = hsl[1].slice(0, -1);
+      s = parseInt(s, 10);
+      l = hsl[2].slice(0, -1);
+      l = parseInt(l, 10);
+      if (id === 1) {
+        h = h - 180;
+      } else if (id === 2) {
+        h = h - 170;
+      } else if (id === 3) {
+        h = h - 160;
+      } else if (id === 4) {
+        h = h - 190;
+      }
+    } else if (scheme == "compound") {
+      h = hsl[0].slice(0, -1);
+      h = parseInt(h, 10);
+      s = hsl[1].slice(0, -1);
+      s = parseInt(s, 10);
+      l = hsl[2].slice(0, -1);
+      l = parseInt(l, 10);
+      if (id === 1) {
+        h = h - 180;
+      } else if (id === 2) {
+        h = h - 150;
+      } else if (id === 3) {
+        h = h + 150;
+      } else if (id === 4) {
+        h = h - 180;
+      }
+    } else if (scheme == "shades") {
+      h = hsl[0].slice(0, -1);
+      h = parseInt(h, 10);
+      s = hsl[1].slice(0, -1);
+      s = parseInt(s, 10);
+      l = hsl[2].slice(0, -1);
+      l = parseInt(l, 10);
+      if (id === 1) {
+        s = s - 5;
+      } else if (id === 2) {
+        s = s - 10;
+      } else if (id === 3) {
+        s = s - 15;
+      } else if (id === 4) {
+        s = s - 20;
+      }
     }
 
-    function hslToRgb(h, s, l) {}
+    document
+      .querySelector("select")
+      .addEventListener("change", changeColorScheme);
+
+    function changeColorScheme(event) {
+      scheme = event.target.value;
+      if (scheme == "analogous") {
+        h = hsl[0].slice(0, -1);
+        h = parseInt(h, 10);
+        s = hsl[1].slice(0, -1);
+        s = parseInt(s, 10);
+        l = hsl[2].slice(0, -1);
+        l = parseInt(l, 10);
+        if (id === 1) {
+          h = h - 60;
+        } else if (id === 2) {
+          h = h - 30;
+        } else if (id === 3) {
+          h = h += 9;
+        } else if (id === 4) {
+          h = h += 18;
+        }
+      } else if (scheme == "monochromatic") {
+        h = hsl[0].slice(0, -1);
+        h = parseInt(h, 10);
+        s = hsl[1].slice(0, -1);
+        s = parseInt(s, 10);
+        l = hsl[2].slice(0, -1);
+        l = parseInt(l, 10);
+        if (id === 1) {
+          l = l - 5;
+        } else if (id === 2) {
+          l = l - 10;
+        } else if (id === 3) {
+          l = l - 15;
+        } else if (id === 4) {
+          l = l - 20;
+        }
+      } else if (scheme == "triad") {
+        h = hsl[0].slice(0, -1);
+        h = parseInt(h, 10);
+        s = hsl[1].slice(0, -1);
+        s = parseInt(s, 10);
+        l = hsl[2].slice(0, -1);
+        l = parseInt(l, 10);
+        if (id === 1) {
+          h = h - 60;
+        } else if (id === 2) {
+          h = h - 120;
+        } else if (id === 3) {
+          h = h - 120;
+        } else if (id === 4) {
+          h = h - 60;
+        }
+      } else if (scheme == "complementary") {
+        h = hsl[0].slice(0, -1);
+        h = parseInt(h, 10);
+        s = hsl[1].slice(0, -1);
+        s = parseInt(s, 10);
+        l = hsl[2].slice(0, -1);
+        l = parseInt(l, 10);
+        if (id === 1) {
+          h = h - 180;
+        } else if (id === 2) {
+          h = h - 170;
+        } else if (id === 3) {
+          h = h - 160;
+        } else if (id === 4) {
+          h = h - 190;
+        }
+      } else if (scheme == "compound") {
+        h = hsl[0].slice(0, -1);
+        h = parseInt(h, 10);
+        s = hsl[1].slice(0, -1);
+        s = parseInt(s, 10);
+        l = hsl[2].slice(0, -1);
+        l = parseInt(l, 10);
+        if (id === 1) {
+          h = h - 180;
+        } else if (id === 2) {
+          h = h - 150;
+        } else if (id === 3) {
+          h = h + 150;
+        } else if (id === 4) {
+          h = h - 180;
+        }
+      } else if (scheme == "shades") {
+        h = hsl[0].slice(0, -1);
+        h = parseInt(h, 10);
+        s = hsl[1].slice(0, -1);
+        s = parseInt(s, 10);
+        l = hsl[2].slice(0, -1);
+        l = parseInt(l, 10);
+        if (id === 1) {
+          s = s - 5;
+        } else if (id === 2) {
+          s = s - 10;
+        } else if (id === 3) {
+          s = s - 15;
+        } else if (id === 4) {
+          s = s - 20;
+        }
+      }
+      showColor(id, h, s, l);
+    }
+    showColor(id, h, s, l);
   }
 }
